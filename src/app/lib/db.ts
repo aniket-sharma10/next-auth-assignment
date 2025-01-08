@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-var
