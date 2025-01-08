@@ -62,6 +62,7 @@ const LoginForm = () => {
         });
       }
     } catch (error) {
+      console.error("Error sending OTP:", error);
       toast({
         title: "Error",
         description: "Something went wrong. Please try again later.",
@@ -97,6 +98,7 @@ const LoginForm = () => {
         window.location.href = "/" // Redirect to home after successful login
       }
     } catch (error) {
+      console.error("Error verifying OTP:", error);
       toast({
         title: "Error",
         description: "Failed to verify OTP. Please try again.",

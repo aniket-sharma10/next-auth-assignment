@@ -16,17 +16,17 @@ const handler = NextAuth({
         email: { label: "Email", type: "email" },
         otp: { label: "OTP", type: "text" },
       },
-      async authorize(credentials:any) {
+      async authorize(credentials: Record<"email" | "otp", string> | undefined) {
         try {
-          if (!credentials.email || !credentials?.otp) {
+          if (!credentials || !credentials.email || !credentials?.otp) {
             throw new Error("Email and OTP are required");
           }
 
           await connectDB();
-          
+
           // checking if the user exists
           const user = await User.findOne({ email: credentials.email });
-          
+
           if (!user) {
             throw new Error("User not found. Please sign up first.");
           }
@@ -55,7 +55,6 @@ const handler = NextAuth({
             name: user.name,
             role: user.role,
           };
-
         } catch (error) {
           if (error instanceof Error) {
             throw error;

@@ -1,16 +1,22 @@
 import mongoose from 'mongoose';
 
+// Extend the global object inline to add `mongoose` property
+declare global {
+  var mongoose: { conn: mongoose.Mongoose | null; promise: Promise<mongoose.Mongoose> | null };
+}
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+// Check if `global.mongoose` exists, and if not, define it
+if (!global.mongoose) {
+  global.mongoose = { conn: null, promise: null };
 }
+
+let cached = global.mongoose;
 
 async function connectDB() {
   if (cached.conn) {

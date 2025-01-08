@@ -77,6 +77,7 @@ const SignupForm = () => {
         });
       }
     } catch (error) {
+      console.error("Error sending OTP:", error);
       toast({
         title: "Error",
         description: "Something went wrong. Please try again later.",
@@ -113,6 +114,7 @@ const SignupForm = () => {
         });
       }
     } catch (error) {
+      console.error("Error verifying OTP:", error);
       toast({
         title: "Error",
         description: "Failed to verify OTP. Please try again.",
