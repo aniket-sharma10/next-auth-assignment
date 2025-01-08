@@ -14,7 +14,6 @@ function generateOTP(length: number = 6): string {
 }
 
 export async function POST(req: Request) {
-  let connection;
   try {
     const { email, name, type } = await req.json();
 
@@ -25,7 +24,7 @@ export async function POST(req: Request) {
       );
     }
 
-    connection = await connectDB();
+     await connectDB();
     const existingUser = await User.findOne({ email }).lean();
 
     // Handles signup vs login logic
@@ -51,7 +50,7 @@ export async function POST(req: Request) {
           )
         : Promise.reject(new Error("User not found. Please sign up first."));
     // Run DB operation and email sending in parallel
-    const [result] = await Promise.all([
+     await Promise.all([
       dbOperation,
       sendOTPEmail(email, otp, type),
     ]);
