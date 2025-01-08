@@ -2,8 +2,15 @@
 import mongoose from 'mongoose';
 
 // eslint-disable-next-line no-var
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+  isConnecting: boolean;
+};
+
+// Declare the global type
 declare global {
-  var mongoose: { conn: mongoose.Mongoose | null; promise: Promise<mongoose.Mongoose> | null };
+  var mongoose: MongooseCache | undefined;
 }
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -14,7 +21,7 @@ if (!MONGODB_URI) {
 
 // Check if `global.mongoose` exists, and if not, define it
 if (!global.mongoose) {
-  global.mongoose = { conn: null, promise: null };
+  global.mongoose = { conn: null, promise: null, isConnecting: false};
 }
 
 const cached = global.mongoose;
@@ -24,13 +31,29 @@ async function connectDB() {
     return cached.conn;
   }
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI!).then((mongoose) => {
-      return mongoose;
-    });
+  if (cached.isConnecting) {
+    return cached.promise;
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  try {
+    cached.isConnecting = true;
+    
+    if (!cached.promise) {
+      const opts = {
+        bufferCommands: false,
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      };
+
+      cached.promise = mongoose.connect(MONGODB_URI!, opts);
+    }
+    
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } finally {
+    cached.isConnecting = false;
+  }
 }
 
 export default connectDB;
