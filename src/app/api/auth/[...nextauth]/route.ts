@@ -46,8 +46,12 @@ const handler = NextAuth({
           }
 
           // Clearing OTP after successful verification
-          user.otp = undefined;
-          await user.save();
+          if (user.otp) {
+            await User.updateOne(
+              { _id: user._id },
+              { $unset: { otp: 1 } }
+            );
+          }
 
           return {
             id: user._id.toString(),
