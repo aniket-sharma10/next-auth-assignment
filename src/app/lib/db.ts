@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-// Extend the global object inline to add `mongoose` property
+// eslint-disable-next-line no-var
 declare global {
   var mongoose: { conn: mongoose.Mongoose | null; promise: Promise<mongoose.Mongoose> | null };
 }
@@ -16,7 +16,7 @@ if (!global.mongoose) {
   global.mongoose = { conn: null, promise: null };
 }
 
-let cached = global.mongoose;
+const cached = global.mongoose;
 
 async function connectDB() {
   if (cached.conn) {
